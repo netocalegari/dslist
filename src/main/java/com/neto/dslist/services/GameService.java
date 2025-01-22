@@ -4,6 +4,7 @@ import com.neto.dslist.dtos.GameDTO;
 import com.neto.dslist.dtos.GameMinDTO;
 import com.neto.dslist.entities.Game;
 import com.neto.dslist.exceptions.BadRequestException;
+import com.neto.dslist.projections.GameMinProjection;
 import com.neto.dslist.repositories.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,5 +27,12 @@ public class GameService {
         Game game = gameRepository.findById(id).orElseThrow(() -> new BadRequestException("Game not found"));
 
         return new GameDTO(game);
+    }
+
+    @Transactional(readOnly = true)
+    public List<GameMinDTO> findByList(Long listId) {
+        List<GameMinProjection> result = gameRepository.searchByList(listId);
+
+        return result.stream().map(GameMinDTO::new).toList();
     }
 }
